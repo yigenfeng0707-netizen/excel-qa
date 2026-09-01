@@ -24,6 +24,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  req.setEncoding('utf8');
   let body = '';
   req.on('data', c => { body += c; });
   req.on('end', () => {
@@ -41,9 +42,11 @@ const server = http.createServer((req, res) => {
       }
     }, upRes => {
       res.writeHead(upRes.statusCode || 502, { 'Content-Type': 'application/json; charset=utf-8' });
+      upRes.on('error', () => { res.destroy(); });
       upRes.pipe(res);
     });
     upstream.on('error', err => {
+      if (res.headersSent) { res.destroy(); return; }
       res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
       res.end(JSON.stringify({ error: { message: '代理请求上游失败: ' + err.message, type: 'proxy_upstream_error' } }));
     });
@@ -52,7 +55,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`[excel-qa proxy] http://localhost:${PORT}/chat/completions  ->  ${TARGET}/chat/completions`);
-  console.log('[excel-qa proxy] 页面「接口前缀」请填: http://localhost:8787');
+  console.log(`[excel-qa proxy] 页面「接口前缀」请填: http://localhost:${PORT}`);
 });
