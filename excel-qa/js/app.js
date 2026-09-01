@@ -37,9 +37,9 @@ function renderPreview(){
   const{rows,name,sheet}=tableData;
   const header=rows[0],body=rows.slice(1,11);
   const info=$('fileInfo');
-  info.innerHTML=`<span>📄 ${name}</span><span>📋 工作表：${sheet}</span><span>🔢 ${rows.length-1} 行 × ${header.length} 列</span>`;
-  let html='<table><thead><tr>'+header.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>';
-  html+=body.map(r=>'<tr>'+header.map((_,i)=>`<td>${r[i]??''}</td>`).join('')+'</tr>').join('');
+  info.innerHTML=`<span>📄 ${escapeHtml(name)}</span><span>📋 工作表：${escapeHtml(sheet)}</span><span>🔢 ${rows.length-1} 行 × ${header.length} 列</span>`;
+  let html='<table><thead><tr>'+header.map(h=>`<th>${escapeHtml(h??'')}</th>`).join('')+'</tr></thead><tbody>';
+  html+=body.map(r=>'<tr>'+header.map((_,i)=>`<td>${escapeHtml(r[i]??'')}</td>`).join('')+'</tr>').join('');
   if(rows.length>11)html+=`<tr><td colspan="${header.length}" style="text-align:center;color:#9ca3af">… 共 ${rows.length-1} 行，仅预览前 10 行</td></tr>`;
   html+='</tbody></table>';
   const wrap=$('previewWrap');
