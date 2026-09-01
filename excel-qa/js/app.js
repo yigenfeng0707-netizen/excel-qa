@@ -108,7 +108,23 @@ function addHistory(q,a){
   item.innerHTML=`<div class="q">Q：${escapeHtml(q)}</div><div class="a">${escapeHtml(a)}</div>`;
   h.prepend(item);
 }
+function exportHistory(){
+  const items=[...document.querySelectorAll('#history .item')].map(el=>{
+    const q=el.querySelector('.q').textContent.replace(/^Q：/,'');
+    const a=el.querySelector('.a').textContent;
+    return `## 问：${q}\n\n${a}`;
+  });
+  if(!items.length){alert('暂无问答记录，先完成一次提问吧');return}
+  const md=`# Excel 问答记录\n\n> 文件：${tableData?tableData.name:''} · 导出时间：${new Date().toLocaleString()}\n\n${items.join('\n\n---\n\n')}`;
+  const blob=new Blob([md],{type:'text/markdown;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='excel-qa-history.md';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
 
+$('exportBtn').addEventListener('click',exportHistory);
 $('askBtn').addEventListener('click',ask);
 $('question').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();ask()}});
