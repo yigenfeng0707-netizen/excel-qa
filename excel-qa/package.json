@@ -1,0 +1,9 @@
+{
+  "name": "excel-qa",
+  "version": "1.0.0",
+  "description": "上传 Excel · 大白话提问 · AI 直接给答案",
+  "private": true,
+  "scripts": {
+    "start": "node server/proxy.js"
+  }
+}
