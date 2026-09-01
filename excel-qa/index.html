@@ -51,12 +51,13 @@
         </div>
         <div>
           <label>接口前缀（可填代理地址解决跨域）</label>
-          <input type="text" id="endpoint" value="https://dashscope.aliyuncs.com/compatible-mode/v1">
+          <input type="text" id="endpoint" value="http://localhost:8787">
         </div>
       </div>
       <p class="tip">
         💡 Key 在 <code>bailian.console.aliyun.com</code> → API-KEY → 创建。<br>
-        💡 浏览器直调若报跨域(CORS)错误，需把「接口前缀」改成你的代理地址，或部署到千问办公平台由其代理。<br>
+        💡 默认通过本地代理 <code>http://localhost:8787</code> 转发以避免跨域，先运行 <code>npm start</code>（在 excel-qa 目录下）。<br>
+        💡 若不想跑代理，可把「接口前缀」改回 <code>https://dashscope.aliyuncs.com/compatible-mode/v1</code> 直连，跨域失败时再启用代理。<br>
         💡 Key 仅存在本浏览器(localStorage)，不会上传服务器。
       </p>
     </details>
