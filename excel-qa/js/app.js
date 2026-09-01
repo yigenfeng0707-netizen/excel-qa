@@ -98,7 +98,7 @@ async function ask(){
     addHistory(q,reply);
   }catch(err){
     ans.className='answer err';
-    ans.innerHTML=`<div class="meta">问：${escapeHtml(q)}</div>❌ 请求失败：${escapeHtml(err.message)}\n\n常见原因：① API Key 错误 ② 跨域(CORS)：需把「接口前缀」改成代理地址 ③ 模型名不对（试试 qwen-max / qwen-plus / qwen3-max）`;
+    ans.innerHTML=`<div class="meta">问：${escapeHtml(q)}</div>❌ 请求失败：${escapeHtml(err.message)}\n\n常见原因：① API Key 错误 ② 本地代理未启动：请在 excel-qa 目录运行 npm start（若是直连模式则检查跨域/代理配置） ③ 模型名不对（试试 qwen-max / qwen-plus / qwen3-max）`;
   }finally{btn.disabled=false;btn.textContent='提问'}
 }
 
