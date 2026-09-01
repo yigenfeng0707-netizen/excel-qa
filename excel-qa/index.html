@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excel 智能问答 · 大白话查数据</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#fff; --pri:#6366f1; --pri2:#8b5cf6;
+    --text:#1f2937; --muted:#6b7280; --border:#e5e7eb; --ok:#10b981; --err:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.6}
+  .container{max-width:880px;margin:0 auto;padding:20px 16px 60px}
+  header{text-align:center;padding:18px 0 8px}
+  header h1{font-size:26px;background:linear-gradient(90deg,var(--pri),var(--pri2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
+  header p{color:var(--muted);font-size:14px;margin-top:6px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:18px;margin-top:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .card h2{font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .card h2 .num{display:inline-block;width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(90deg,var(--pri),var(--pri2));color:#fff;font-size:13px;
+    text-align:center;line-height:22px}
+  .upload{border:2px dashed #c7d2fe;border-radius:12px;padding:30px;text-align:center;
+    cursor:pointer;transition:.2s;background:#fafbff}
+  .upload:hover{border-color:var(--pri);background:#f3f4ff}
+  .upload.drag{border-color:var(--pri);background:#eef2ff}
+  .upload svg{width:40px;height:40px;fill:var(--pri)}
+  .upload p{color:var(--muted);margin-top:8px;font-size:14px}
+  .upload strong{color:var(--pri)}
+  input[type=file]{display:none}
+  .file-info{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+  .file-info span{background:#f3f4ff;padding:4px 10px;border-radius:6px}
+  .preview-wrap{overflow:auto;max-height:320px;border:1px solid var(--border);
+    border-radius:8px;margin-top:10px}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th,td{border:1px solid var(--border);padding:6px 10px;text-align:left;white-space:nowrap}
+  th{background:#f9fafb;font-weight:600;position:sticky;top:0}
+  tbody tr:nth-child(even){background:#fafbff}
+  .qa-input{display:flex;gap:10px;align-items:flex-end}
+  textarea{flex:1;resize:vertical;min-height:54px;padding:10px 12px;border:1px solid var(--border);
+    border-radius:10px;font-size:14px;font-family:inherit;outline:none}
+  textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+  button{padding:10px 18px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--pri),var(--pri2));
+    color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+  .suggest{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .suggest button{background:#f3f4ff;color:var(--pri);padding:6px 12px;font-size:13px;font-weight:500}
+  .answer{margin-top:14px;padding:14px 16px;border-radius:10px;background:#f9fafb;
+    border-left:3px solid var(--pri);font-size:14px;white-space:pre-wrap;word-break:break-word}
+  .answer.err{border-left-color:var(--err);background:#fef2f2}
+  .answer .meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .history{margin-top:10px}
+  .history .item{padding:10px 12px;border-radius:8px;background:#fff;border:1px solid var(--border);
+    margin-bottom:8px;font-size:13px}
+  .history .item .q{color:var(--pri);font-weight:600;margin-bottom:4px}
+  .history .item .a{color:var(--text);white-space:pre-wrap;word-break:break-word}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-size:13px;color:var(--muted);padding:6px 0}
+  .settings-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+  .settings-row input{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px}
+  .settings-row label{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
+  .full{grid-column:1/-1}
+  .tip{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .tip code{background:#f3f4ff;padding:1px 5px;border-radius:4px;color:var(--pri)}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;
+    border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  @media(max-width:600px){.settings-row{grid-template-columns:1fr}.qa-input{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📊 Excel 智能问答</h1>
+    <p>上传表格 · 大白话提问 · AI 直接给答案 · 不用懂公式</p>
+  </header>
+
+  <div class="card">
+    <h2><span class="num">1</span>上传 Excel 文件</h2>
+    <label class="upload" id="dropZone">
+      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      <p><strong>点击选择</strong> 或拖拽文件到此处</p>
+      <p>支持 .xlsx / .xls / .csv</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+    </label>
+    <div class="file-info" id="fileInfo"></div>
+    <div class="preview-wrap" id="previewWrap" style="display:none;margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span>用大白话提问</h2>
+    <div class="qa-input">
+      <textarea id="question" placeholder="例如：3月销量最高的产品是哪个？总销售额多少？"></textarea>
+      <button id="askBtn" disabled>提问</button>
+    </div>
+    <div class="suggest" id="suggest"></div>
+    <div class="answer" id="answer" style="display:none"></div>
+    <div class="history" id="history"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>设置</h2>
+    <details open>
+      <summary>API 配置（首次使用需填写）</summary>
+      <div class="settings-row">
+        <div class="full">
+          <label>API Key（千问/百炼 DashScope Key）</label>
+          <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxx" autocomplete="off">
+        </div>
+        <div>
+          <label>模型名</label>
+          <input type="text" id="model" value="qwen-max">
+        </div>
+        <div>
+          <label>接口前缀（可填代理地址解决跨域）</label>
+          <input type="text" id="endpoint" value="https://dashscope.aliyuncs.com/compatible-mode/v1">
+        </div>
+      </div>
+      <p class="tip">
+        💡 Key 在 <code>bailian.console.aliyun.com</code> → API-KEY → 创建。<br>
+        💡 浏览器直调若报跨域(CORS)错误，需把「接口前缀」改成你的代理地址，或部署到千问办公平台由其代理。<br>
+        💡 Key 仅存在本浏览器(localStorage)，不会上传服务器。
+      </p>
+    </details>
+  </div>
+</div>
+
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const LS={key:'excel_qa_cfg',load(){try{return JSON.parse(localStorage.getItem(this.key))||{}}catch(e){return{}}},save(c){localStorage.setItem(this.key,JSON.stringify(c))}};
+let tableData=null;
+
+const cfg=LS.load();
+if(cfg.apiKey)$('apiKey').value=cfg.apiKey;
+if(cfg.model)$('model').value=cfg.model;
+if(cfg.endpoint)$('endpoint').value=cfg.endpoint;
+
+function saveCfg(){LS.save({apiKey:$('apiKey').value,model:$('model').value,endpoint:$('endpoint').value})}
+['apiKey','model','endpoint'].forEach(id=>$(id).addEventListener('change',saveCfg));
+
+const dropZone=$('dropZone'),fileInput=$('fileInput');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0])});
+
+function handleFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const sheet=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(sheet,{header:1,defval:''});
+      if(rows.length<1)throw new Error('表格为空');
+      tableData={name:file.name,sheet:wb.SheetNames[0],rows};
+      renderPreview();
+      $('askBtn').disabled=false;
+      buildSuggest();
+    }catch(err){alert('解析失败：'+err.message)}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function renderPreview(){
+  const{rows,name,sheet}=tableData;
+  const header=rows[0],body=rows.slice(1,11);
+  const info=$('fileInfo');
+  info.innerHTML=`<span>📄 ${name}</span><span>📋 工作表：${sheet}</span><span>🔢 ${rows.length-1} 行 × ${header.length} 列</span>`;
+  let html='<table><thead><tr>'+header.map(h=>`<th>${h}</th>`).join('')+'</tr></thead><tbody>';
+  html+=body.map(r=>'<tr>'+header.map((_,i)=>`<td>${r[i]??''}</td>`).join('')+'</tr>').join('');
+  if(rows.length>11)html+=`<tr><td colspan="${header.length}" style="text-align:center;color:#9ca3af">… 共 ${rows.length-1} 行，仅预览前 10 行</td></tr>`;
+  html+='</tbody></table>';
+  const wrap=$('previewWrap');
+  wrap.innerHTML=html;wrap.style.display='block';
+}
+
+function buildSuggest(){
+  const header=tableData.rows[0]||[];
+  const numCol=header.find((h,i)=>tableData.rows.slice(1,30).some(r=>typeof r[i]==='number'||/^-?\d+(\.\d+)?$/.test(r[i])));
+  const items=[];
+  if(numCol){items.push(`按${numCol}从高到低排前5`);items.push(`${numCol}的总和是多少`);items.push(`${numCol}的平均值是多少`)}
+  items.push(`这张表有哪些字段，分别是什么意思`);
+  items.push(`帮我总结这份数据的关键信息`);
+  const box=$('suggest');box.innerHTML='';
+  items.slice(0,4).forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$('question').value=t;ask()};box.appendChild(b)});
+}
+
+function toMarkdown(){
+  const{rows}=tableData;
+  const header=rows[0],body=rows.slice(1);
+  const md=[`| ${header.join(' | ')} |`,`| ${header.map(()=>'---').join(' | ')} |`];
+  const limit=body.length>25?body.slice(0,25):body;
+  limit.forEach(r=>md.push(`| ${header.map((_,i)=>String(r[i]??'').replace(/\|/g,'\\|')).join(' | ')} |`));
+  if(body.length>25)md.push(`\n（注：表格共 ${body.length} 行，为节省篇幅仅展示前 25 行样例，请基于这些样例和字段语义回答）`);
+  return md.join('\n');
+}
+
+async function ask(){
+  const q=$('question').value.trim();
+  if(!q)return;
+  const apiKey=$('apiKey').value.trim();
+  if(!apiKey){alert('请先在下方「设置」里填写 API Key');return}
+  if(!tableData){alert('请先上传 Excel 文件');return}
+  saveCfg();
+  const btn=$('askBtn'),ans=$('answer');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>思考中';
+  ans.style.display='block';ans.className='answer';ans.textContent='';
+  const sys=`你是一名数据分析助手。用户会给你一份表格数据（Markdown 格式）和一个问题。
+规则：
+1. 只能基于提供的表格数据回答，不要编造数据。
+2. 如果数据不足以回答，明确说"根据现有数据无法回答"并说明缺什么。
+3. 回答简洁、直接，先给结论，必要时附具体数值。
+4. 涉及排序/统计时，列出具体结果。
+5. 如果只展示了部分样例行，基于样例作答并说明"基于展示的样例数据"。`;
+  const userMsg=`表格数据：\n${toMarkdown()}\n\n问题：${q}`;
+  try{
+    const endpoint=$('endpoint').value.trim().replace(/\/$/,'');
+    const res=await fetch(endpoint+'/chat/completions',{
+      method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
+      body:JSON.stringify({model:$('model').value.trim(),messages:[{role:'system',content:sys},{role:'user',content:userMsg}],temperature:0.3})
+    });
+    if(!res.ok){const t=await res.text();throw new Error(`HTTP ${res.status}：${t.slice(0,300)}`)}
+    const data=await res.json();
+    const reply=data.choices?.[0]?.message?.content||'(空回复)';
+    ans.innerHTML=`<div class="meta">问：${escapeHtml(q)}</div>${escapeHtml(reply)}`;
+    addHistory(q,reply);
+  }catch(err){
+    ans.className='answer err';
+    ans.innerHTML=`<div class="meta">问：${escapeHtml(q)}</div>❌ 请求失败：${escapeHtml(err.message)}\n\n常见原因：① API Key 错误 ② 跨域(CORS)：需把「接口前缀」改成代理地址 ③ 模型名不对（试试 qwen-max / qwen-plus / qwen3-max）`;
+  }finally{btn.disabled=false;btn.textContent='提问'}
+}
+
+function addHistory(q,a){
+  const h=$('history');
+  const item=document.createElement('div');item.className='item';
+  item.innerHTML=`<div class="q">Q：${escapeHtml(q)}</div><div class="a">${escapeHtml(a)}</div>`;
+  h.prepend(item);
+}
+function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+
+$('askBtn').addEventListener('click',ask);
+$('question').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();ask()}});
+</script>
+</body>
+</html>

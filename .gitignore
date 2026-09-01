@@ -1,0 +1,11 @@
+# codegraph 二进制索引与运行时文件
+.codegraph/
+
+# 系统与编辑器
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+
+# Node
+node_modules/
