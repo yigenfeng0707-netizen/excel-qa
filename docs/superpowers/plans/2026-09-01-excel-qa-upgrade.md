@@ -32,7 +32,7 @@ excel-qa/
 **Files:**
 - Create: `d:\APPs\qianwenVibeCoding\.gitignore`
 
-- [ ] **Step 1: 创建 .gitignore**
+- [x] **Step 1: 创建 .gitignore**
 
 在工作区根目录 `d:\APPs\qianwenVibeCoding` 创建 `.gitignore`，内容如下（忽略 AI 工具生成的二进制索引与运行时文件，保留 `.codeartsdoer` 中的 agent/skill 配置）：
 
@@ -50,7 +50,7 @@ Desktop.ini
 node_modules/
 ```
 
-- [ ] **Step 2: git init 并首次提交**
+- [x] **Step 2: git init 并首次提交**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git init; git add .; git commit -m "chore: initial commit - excel-qa app, research reports and configs"
@@ -58,7 +58,7 @@ cd d:\APPs\qianwenVibeCoding; git init; git add .; git commit -m "chore: initial
 
 预期输出：`[main (root-commit) xxxx] ...`，列出 excel-qa/index.html、两份研究报告、.gitignore 及 .codeartsdoer 配置文件。
 
-- [ ] **Step 3: 验证提交结果**
+- [x] **Step 3: 验证提交结果**
 
 ```powershell
 git log --oneline; git status
@@ -74,11 +74,11 @@ git log --oneline; git status
 - Create: `excel-qa/css/style.css`
 - Modify: `excel-qa/index.html`
 
-- [ ] **Step 1: 创建 css/style.css**
+- [x] **Step 1: 创建 css/style.css**
 
 新建 `excel-qa/css/style.css`，内容 = `index.html` 中 `<style>` 标签（第 7–73 行）的全部内部文本，即从 `:root{` 第一行到 `@media(max-width:600px){.settings-row{grid-template-columns:1fr}.qa-input{flex-direction:column}}` 最后一行，原样复制，不加 `<style>` 标签。
 
-- [ ] **Step 2: 修改 index.html 引用外部样式**
+- [x] **Step 2: 修改 index.html 引用外部样式**
 
 在 `index.html` 中将整个 `<style>...</style>` 块（含标签本身）替换为一行外链：
 
@@ -97,12 +97,12 @@ git log --oneline; git status
 </head>
 ```
 
-- [ ] **Step 3: 浏览器验证样式正常**
+- [x] **Step 3: 浏览器验证样式正常**
 
 用浏览器打开 `d:\APPs\qianwenVibeCoding\excel-qa\index.html`（或 `Start-Process d:\APPs\qianwenVibeCoding\excel-qa\index.html`）。
 预期：页面仍为渐变标题「📊 Excel 智能问答」、虚线上传框、卡片圆角阴影样式，与拆分前完全一致。按 F12 查看 Console 无 404。
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git add excel-qa/css/style.css excel-qa/index.html; git commit -m "refactor: extract inline CSS into css/style.css"
@@ -116,11 +116,11 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/css/style.css excel-qa/index.html
 - Create: `excel-qa/js/app.js`
 - Modify: `excel-qa/index.html`
 
-- [ ] **Step 1: 创建 js/app.js**
+- [x] **Step 1: 创建 js/app.js**
 
 新建 `excel-qa/js/app.js`，内容 = `index.html` 中第二个 `<script>` 标签（原第 133–248 行）的全部内部文本，即从 `const $=id=>document.getElementById(id);` 到最后一行 `$('question').addEventListener('keydown',...`，原样复制，不加 `<script>` 标签。
 
-- [ ] **Step 2: 修改 index.html 引用外部脚本**
+- [x] **Step 2: 修改 index.html 引用外部脚本**
 
 将 `<script>` 内联块（含标签本身）整体替换为带 `defer` 的外链，放在 SheetJS CDN 引入之后（defer 保证执行顺序在 DOM 之后，且不依赖内联位置）：
 
@@ -129,14 +129,14 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/css/style.css excel-qa/index.html
 <script src="js/app.js" defer></script>
 ```
 
-- [ ] **Step 3: 浏览器验证功能正常**
+- [x] **Step 3: 浏览器验证功能正常**
 
 刷新页面，按 F12 确认 Console 无报错。验证三条主链路：
 1. 拖入一个 `.xlsx` 文件 → 出现表格预览和「行 × 列」信息；
 2. 出现 4 个建议问题按钮；
 3. 填入任意 API Key 并点击提问 → 按钮变为「思考中」并进入请求流程（此时允许因 Key 无效/CORS 失败，重点是 JS 已加载运行）。
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git add excel-qa/js/app.js excel-qa/index.html; git commit -m "refactor: extract inline JavaScript into js/app.js"
@@ -150,7 +150,7 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/js/app.js excel-qa/index.html; gi
 - Create: `excel-qa/server/proxy.js`
 - Create: `excel-qa/package.json`
 
-- [ ] **Step 1: 创建 server/proxy.js**
+- [x] **Step 1: 创建 server/proxy.js**
 
 ```js
 // excel-qa 本地转发代理：解决浏览器直调 DashScope 的 CORS 问题
@@ -213,7 +213,7 @@ server.listen(PORT, () => {
 });
 ```
 
-- [ ] **Step 2: 创建 package.json**
+- [x] **Step 2: 创建 package.json**
 
 ```json
 {
@@ -227,7 +227,7 @@ server.listen(PORT, () => {
 }
 ```
 
-- [ ] **Step 3: 启动代理并验证**
+- [x] **Step 3: 启动代理并验证**
 
 后台启动（PowerShell）：
 
@@ -249,7 +249,7 @@ curl.exe -i http://localhost:8787/other
 
 预期：`HTTP/1.1 404`，body 为 `{"error":{"message":"仅支持 POST /chat/completions",...}}`。
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git add excel-qa/server/proxy.js excel-qa/package.json; git commit -m "feat: add zero-dependency Node proxy to bypass CORS"
@@ -263,11 +263,11 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/server/proxy.js excel-qa/package.
 - Modify: `excel-qa/index.html`（设置区 HTML，约第 119–127 行）
 - Modify: `excel-qa/js/app.js`（endpoint 默认值）
 
-- [ ] **Step 1: 修改 js/app.js 默认 endpoint（无 localStorage 时生效）**
+- [x] **Step 1: 修改 js/app.js 默认 endpoint（无 localStorage 时生效）**
 
 找到 `index.html` 原有 `<input id="endpoint" value="https://dashscope.aliyuncs.com/compatible-mode/v1">` 对应的 HTML（在 index.html 中修改，见 Step 2），JS 中 `cfg.endpoint` 为空时输入框即使用该 value，无需改 JS 逻辑。仅确认 `saveCfg` 读取的是输入框值即可，不动代码。
 
-- [ ] **Step 2: 修改 index.html 设置区默认值与提示**
+- [x] **Step 2: 修改 index.html 设置区默认值与提示**
 
 1) 将接口前缀输入框默认值改为本地代理：
 
@@ -288,14 +288,14 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/server/proxy.js excel-qa/package.
 
 3) 同时把「思考中/失败提示」中关于跨域的措辞保持不变即可（app.js 第 234 行错误提示已覆盖代理场景，无需改动）。
 
-- [ ] **Step 3: 端到端验证**
+- [x] **Step 3: 端到端验证**
 
 保持代理运行，浏览器打开页面：
 1. 设置区「接口前缀」显示 `http://localhost:8787`；
 2. 填入真实 DashScope Key，上传一个 xlsx，点击建议问题「这张表有哪些字段，分别是什么意思」；
 3. 预期：正常返回 AI 回答并写入历史列表（不再出现 CORS 报错）。
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git add excel-qa/index.html; git commit -m "feat: default endpoint to local proxy and update setup tips"
@@ -309,7 +309,7 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/index.html; git commit -m "feat: 
 - Modify: `excel-qa/index.html`（问答卡片区，约第 95–103 行）
 - Modify: `excel-qa/js/app.js`
 
-- [ ] **Step 1: index.html 增加导出按钮**
+- [x] **Step 1: index.html 增加导出按钮**
 
 将问答卡片标题行改为带导出按钮的布局：
 
@@ -330,7 +330,7 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/index.html; git commit -m "feat: 
 
 （相对原文件的差异：新增 `#exportBtn` 与其后的 `clear:both` 分隔 div，其余结构不变。）
 
-- [ ] **Step 2: js/app.js 增加 exportHistory 并绑定**
+- [x] **Step 2: js/app.js 增加 exportHistory 并绑定**
 
 在 `addHistory` 函数之后、`escapeHtml` 之前追加：
 
@@ -358,12 +358,12 @@ function exportHistory(){
 $('exportBtn').addEventListener('click',exportHistory);
 ```
 
-- [ ] **Step 3: 浏览器验证**
+- [x] **Step 3: 浏览器验证**
 
 1. 空历史时点「导出记录」→ 弹出「暂无问答记录」；
 2. 完成一次提问后导出 → 下载 `excel-qa-history.md`，打开为 Markdown，含「文件名、导出时间、问题与回答」。
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git add excel-qa/index.html excel-qa/js/app.js; git commit -m "feat: export Q&A history as Markdown"
@@ -376,7 +376,7 @@ cd d:\APPs\qianwenVibeCoding; git add excel-qa/index.html excel-qa/js/app.js; gi
 **Files:**
 - Create: `excel-qa/README.md`
 
-- [ ] **Step 1: 创建 excel-qa/README.md**
+- [x] **Step 1: 创建 excel-qa/README.md**
 
 ````markdown
 # Excel 智能问答 · 大白话查数据
@@ -434,13 +434,13 @@ excel-qa/
 - **Key 安全**：Key 只存在本浏览器，代理也不落盘记录，但请勿在公共电脑保存。
 ````
 
-- [ ] **Step 2: 全量回归验证**
+- [x] **Step 2: 全量回归验证**
 
 1. `npm start` 启动代理 → 正常打印监听日志；
 2. 打开页面：上传 → 预览 → 提问 → 回答 → 导出，全链路可用；
 3. 控制台（浏览器 F12 与代理终端）均无报错。
 
-- [ ] **Step 3: 提交并核对最终状态**
+- [x] **Step 3: 提交并核对最终状态**
 
 ```powershell
 cd d:\APPs\qianwenVibeCoding; git add excel-qa/README.md; git commit -m "docs: add excel-qa README"
